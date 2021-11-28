@@ -89,27 +89,16 @@ public class HoldAndDialHandler extends HoldHandlerBase {
         try {
             mOriginalConnection = (mIsConference ? startConferenceInternal(DeferDial.ENABLE) :
                     dialInternal(DeferDial.ENABLE));
-            if (mOriginalConnection == null) {
-                // Tracker was able to process MMI code. Do not hold active call
-                onCompleted(true);
-            } else {
-                holdInternal();
-            }
+            holdInternal();
             return mOriginalConnection;
         } catch (CallStateException e) {
-            if (e.getError() == CallStateException.ERROR_HOLD_ACTIVE_CALL_ON_OTHER_SUB) {
-                // This error means that the tracker can process the MMI code only after the
-                // active call on the other sub is held
-                holdInternal();
-                return null;
-            }
             onCompleted(false);
             throw e;
         }
     }
 
     private void holdInternal() {
-        if (mConnToHold.getState() == Connection.STATE_ACTIVE) {
+        if (mConnToHold.getState() != Connection.STATE_HOLDING) {
             mConnToHold.onHold();
         }
     }
@@ -139,7 +128,8 @@ public class HoldAndDialHandler extends HoldHandlerBase {
                         .setDeferDial(deferDial)
                         .build());
         if (originalConnection == null) {
-            Log.d(this, "HoldAndDialHandler originalconnection = null. MMI use case");
+            // TODO:MMI use case
+            Log.d(this, "HoldAndDialHandler originalconnection = null");
         }
         return originalConnection;
     }
@@ -169,8 +159,7 @@ public class HoldAndDialHandler extends HoldHandlerBase {
                 state == Connection.STATE_DISCONNECTED)) {
             return;
         }
-        if (mOriginalConnection != null &&
-                mConnToDial.getState() == Connection.STATE_DISCONNECTED) {
+        if (mConnToDial.getState() == Connection.STATE_DISCONNECTED) {
             // Pending MO call was hung up
             onCompleted(false);
             return;
