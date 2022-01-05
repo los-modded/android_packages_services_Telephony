@@ -250,6 +250,7 @@
     <!-- Needed to listen to changes in projection state. -->
     <uses-permission android:name="android.permission.READ_PROJECTION_STATE"/>
 
+    <uses-permission android:name="com.qualcomm.permission.USE_QCRIL_MSG_TUNNEL"/>
     <uses-permission android:name="com.qti.permission.BIND_QTI_IMS_SERVICE" />
     <uses-permission android:name="com.qualcomm.qti.permission.USE_EXT_TELEPHONY_SERVICE" />
     <uses-permission android:name="com.qti.permission.RECEIVE_SMS_CALLBACK_MODE" />
